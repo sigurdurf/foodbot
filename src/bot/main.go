@@ -82,11 +82,11 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	}
 
 	if m.Content == "!help" {
-		res := "```\nAvailable commands\n!l or !lunch: Todays dishes at Málið\n!lw {restaurant}: Gets lunch menu from specified restaurant\n!ar: Show available restaurants\nhelp: Displays this menu```"
+		res := "```\nAvailable commands\n!l or !lunch: Todays dishes at Málið\n!lw {restaurant}: Gets lunch menu from specified restaurant\n!ar: Show available restaurants\n!help: Displays this menu```"
 		s.ChannelMessageSend(m.ChannelID, res)
 	}
 	if m.Content == "!ar" {
-		res := "```Málið í HR:\n\tCode: malid\n\tWeekly menu command: !lw\n\tTodays dishes: !l or !lunch```"
+		res := "```Málið í HR:\n\tCode: malid\n\tWeekly menu command: !lw {restaurant}\n\tTodays dishes: !l or !lunch```"
 		s.ChannelMessageSend(m.ChannelID, res)
 	}
 	if m.Content == "!lunch" || m.Content == "!l" {
