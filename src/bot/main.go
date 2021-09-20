@@ -14,6 +14,9 @@ import (
 	"time"
 	"strings"
 )
+type ResponseWeek struct {
+	Days []ResponseDay `json:"menu"`
+}
 
 type ResponseDay struct {
 	Day string `json:"day"`
@@ -77,7 +80,16 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	if m.Author.ID == s.State.User.ID {
 		return
 	}
-	if m.Content == "!lunch" {
+
+	if m.Content == "!help" {
+		res := "```\nAvailable commands\n!l or !lunch: Todays dishes at Málið\n!lw {restaurant}: Gets lunch menu from specified restaurant\n!ar: Show available restaurants\nhelp: Displays this menu```"
+		s.ChannelMessageSend(m.ChannelID, res)
+	}
+	if m.Content == "!ar" {
+		res := "```Málið í HR:\n\tCode: malid\n\tWeekly menu command: !lw\n\tTodays dishes: !l or !lunch```"
+		s.ChannelMessageSend(m.ChannelID, res)
+	}
+	if m.Content == "!lunch" || m.Content == "!l" {
 
 		weekday := time.Now().Weekday()
 		if weekday == 0|| weekday == 7 {
@@ -100,8 +112,37 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		}
 		var responseObject ResponseDay
 		json.Unmarshal(responseData, &responseObject)
-
+		
+		
 		res := fmt.Sprintf("```%s: \nAðalréttur: %s\nVeganréttur: %s\n```", responseObject.Day, responseObject.Main, responseObject.Vegan)
 		s.ChannelMessageSend(m.ChannelID, res)
 	}
+
+	if m.Content == "!lw malid" {
+		url := "http://127.0.0.1:8000/lunch/malid"
+		api_res, err := http.Get(url)
+		if err != nil{
+			fmt.Println("error fetching lunch data,", err)
+			res := fmt.Sprintf("```Error fetching lunch data```")
+			s.ChannelMessageSend(m.ChannelID, res)
+			return
+		}
+		responseData, err := ioutil.ReadAll(api_res.Body)
+		if err != nil {
+			log.Fatal(err)
+			s.ChannelMessageSend(m.ChannelID, "```Error unpacking lunch data```")
+			return
+		}
+		var responseObject ResponseWeek
+		json.Unmarshal(responseData, &responseObject)
+		var codeBlockStart = "```"
+		var middle = ""
+		for i := 0; i < len(responseObject.Days); i++ {
+			middle = fmt.Sprintf("%s\n\n %s: \nAðalréttur: %s\nVeganréttur: %s\n", middle, responseObject.Days[i].Day, responseObject.Days[i].Main, responseObject.Days[i].Vegan)
+		}
+		var codeBlockEnd = "```"
+		res := codeBlockStart + middle + codeBlockEnd
+		s.ChannelMessageSend(m.ChannelID, res)
+	}
+
 }
