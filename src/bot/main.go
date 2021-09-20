@@ -12,6 +12,7 @@ import (
 	"github.com/bwmarrin/discordgo"
 	"encoding/json"
 	"time"
+	"strings"
 )
 
 type ResponseDay struct {
@@ -77,27 +78,30 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		return
 	}
 	if m.Content == "!lunch" {
+
 		weekday := time.Now().Weekday()
-		fmt.Println(weekday == 0)
 		if weekday == 0|| weekday == 7 {
 			s.ChannelMessageSend(m.ChannelID, "```Enginn matur í dag```")
 			return
 		}
-		url := "http://127.0.0.1:8000/lunch/malid?q="+weekday.String()
+		url := "http://127.0.0.1:8000/lunch/malid?q="+strings.ToLower(weekday.String())
 		api_res, err := http.Get(url)
 		if err != nil{
 			fmt.Println("error fetching lunch data,", err)
+			res := fmt.Sprintf("```Error fetching lunch data```")
+			s.ChannelMessageSend(m.ChannelID, res)
+			return
 		}
 		responseData, err := ioutil.ReadAll(api_res.Body)
 		if err != nil {
 			log.Fatal(err)
+			s.ChannelMessageSend(m.ChannelID, "```Error unpacking lunch data```")
+			return
 		}
 		var responseObject ResponseDay
 		json.Unmarshal(responseData, &responseObject)
-    var veganCourse = responseObject.Vegan
-		var mainCourse = responseObject.Main
-		var dayOfCourse = responseObject.Day
-		res := fmt.Sprintf("```%s: \nAðalréttur: %s\nVeganréttur: %s\n```", dayOfCourse, mainCourse, veganCourse)
+
+		res := fmt.Sprintf("```%s: \nAðalréttur: %s\nVeganréttur: %s\n```", responseObject.Day, responseObject.Main, responseObject.Vegan)
 		s.ChannelMessageSend(m.ChannelID, res)
 	}
 }
