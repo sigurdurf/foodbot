@@ -1,2 +1,3 @@
 venv/
 src/bot/bot
+src/api/__pycache__/
