@@ -12,4 +12,4 @@ def read_menu(name: str, q: Optional[str] = None):
     raise HTTPException(status_code=404, detail="Unsupported restaurant")
   if q is not None and q in b:
     return menu[name][b.index(q)]
-  return menu[name]
+  return {"menu": menu[name]}
