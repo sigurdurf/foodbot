@@ -24,7 +24,6 @@ def get_weekly_menu():
         temp = [" "]
   for day, item in zip(menu, menu_title_items):
     for key, dish in zip(day.keys(), item):
-      print(key, dish)
       if key != "day":
         day[key] = dish
   return {"malid": menu}
