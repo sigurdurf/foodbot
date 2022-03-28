@@ -96,7 +96,7 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 			s.ChannelMessageSend(m.ChannelID, "```Enginn matur í dag```")
 			return
 		}
-		url := "http://127.0.0.1:8000/lunch/malid?q="+strings.ToLower(weekday.String())
+		url := "http://127.0.0.1:8111/lunch/malid?q="+strings.ToLower(weekday.String())
 		api_res, err := http.Get(url)
 		if err != nil{
 			fmt.Println("error fetching lunch data,", err)
@@ -117,9 +117,11 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		res := fmt.Sprintf("```%s: \nAðalréttur: %s\nVeganréttur: %s\n```", responseObject.Day, responseObject.Main, responseObject.Vegan)
 		s.ChannelMessageSend(m.ChannelID, res)
 	}
-
+    if m.Content == "!badday"{
+        s.ChannelMessageSend(m.ChannelID,"Everything’s gonna be okay. You did not come this far to give up. I believe in you.")
+    }
 	if m.Content == "!lw malid" {
-		url := "http://127.0.0.1:8000/lunch/malid"
+		url := "http://127.0.0.1:8111/lunch/malid"
 		api_res, err := http.Get(url)
 		if err != nil{
 			fmt.Println("error fetching lunch data,", err)
