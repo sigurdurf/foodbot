@@ -33,7 +33,8 @@ def get_weekly_menu():
         weekday = datetime.datetime.strptime(meal["Date"], "%Y-%m-%d").strftime("%A")
         if "VeganMenu" in meal.keys():
             menu.append({"day": weekday, "main": MAIN+meal["Title"], "vegan": VEGAN+meal["VeganMenu"], "salat": "", "soup": SOUP+meal["SoupOfTheDay"]})
-
+        else:
+            menu.append({"day": weekday, "main": "Lokað", "vegan": "", "salat": "", "soup": ""})
     return {"malid": menu}
 
 
