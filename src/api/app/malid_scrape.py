@@ -29,10 +29,10 @@ def get_weekly_menu():
     r = requests.get(URL)
     meals = json.loads(r.text)
     menu = []
-
     for meal in meals:
         weekday = datetime.datetime.strptime(meal["Date"], "%Y-%m-%d").strftime("%A")
-        menu.append({"day": weekday, "main": MAIN+meal["Title"], "vegan": VEGAN+meal["VeganMenu"], "salat": "", "soup": SOUP+meal["SoupOfTheDay"]})
+        if "VeganMenu" in meal.keys():
+            menu.append({"day": weekday, "main": MAIN+meal["Title"], "vegan": VEGAN+meal["VeganMenu"], "salat": "", "soup": SOUP+meal["SoupOfTheDay"]})
 
     return {"malid": menu}
 
