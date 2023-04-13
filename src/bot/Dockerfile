@@ -5,7 +5,7 @@ FROM golang:1.17.6-alpine3.15
 WORKDIR /app
 
 # Copy the source code into the container at /app
-COPY main.go config.json .
+COPY main.go config.json /app
 COPY go.mod .
 RUN go get github.com/bwmarrin/discordgo
 
