@@ -1,7 +1,6 @@
 package main
 
 import (
-	"flag"
 	"fmt"
 	"os"
 	"log"
@@ -29,20 +28,28 @@ type ResponseDay struct {
 
 
 // Variables used for command line parameters
-var (
-	Token string
-)
 
-func init() {
-
-	flag.StringVar(&Token, "t", "", "Bot Token")
-	flag.Parse()
+type Config struct {
+    Token string `json:"token"`
+    Server string `json:"server"`
 }
 
+
 func main() {
+    ConfigFile, err := ioutil.ReadFile("config.json")
+    if err != nil {
+        log.Fatal("Failed to read configuration file:", err)
+    }
+
+    var config Config
+    err = json.Unmarshal(ConfigFile, &config)
+    if err != nil {
+        log.Fatal("Failed to read configuration file:", err)
+    }
+    token := config.Token
 
 	// Create a new Discord session using the provided bot token.
-	dg, err := discordgo.New("Bot " + Token)
+	dg, err := discordgo.New("Bot " + token)
 	if err != nil {
 		fmt.Println("error creating Discord session,", err)
 		return
@@ -74,7 +81,17 @@ func main() {
 // This function will be called (due to AddHandler above) every time a new
 // message is created on any channel that the authenticated bot has access to.
 func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
+    ConfigFile, err := ioutil.ReadFile("config.json")
+    if err != nil {
+        log.Fatal("Failed to read configuration file:", err)
+    }
 
+    var config Config
+    err = json.Unmarshal(ConfigFile, &config)
+    if err != nil {
+        log.Fatal("Failed to read configuration file:", err)
+    }
+    server := config.Server
 	// Ignore all messages created by the bot itself
 	// This isn't required in this specific example but it's a good practice.
 	if m.Author.ID == s.State.User.ID {
@@ -96,7 +113,7 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 			s.ChannelMessageSend(m.ChannelID, "```Enginn matur í dag```")
 			return
 		}
-		url := "http://127.0.0.1:8111/lunch/malid?q="+strings.ToLower(weekday.String())
+		url := "http://"+server+":8111/lunch/malid?q="+strings.ToLower(weekday.String())
 		api_res, err := http.Get(url)
 		if err != nil{
 			fmt.Println("error fetching lunch data,", err)
@@ -121,7 +138,7 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
         s.ChannelMessageSend(m.ChannelID,"Everything’s gonna be okay. You did not come this far to give up. I believe in you.")
     }
 	if m.Content == "!lw malid" {
-		url := "http://127.0.0.1:8111/lunch/malid"
+		url := "http://"+server+":8111/lunch/malid"
 		api_res, err := http.Get(url)
 		if err != nil{
 			fmt.Println("error fetching lunch data,", err)

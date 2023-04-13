@@ -1,4 +1,5 @@
 venv/
+src/bot/config.json
 src/bot/bot
 src/api/__pycache__/
 src/api/app/__pycache__/

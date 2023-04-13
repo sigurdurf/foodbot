@@ -1,0 +1,8 @@
+version: '3'
+services:
+  bot:
+    build: ./src/bot/.
+  api:
+    build: ./src/api/.
+    ports:
+      - "8111:8111"
