@@ -156,9 +156,13 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		json.Unmarshal(responseData, &responseObject)
 		var codeBlockStart = "```"
 		var middle = ""
-		for i := 0; i < len(responseObject.Days); i++ {
-			middle = fmt.Sprintf("%s\n\n %s: \nAðalréttur: %s\nVeganréttur: %s\n", middle, responseObject.Days[i].Day, responseObject.Days[i].Main, responseObject.Days[i].Vegan)
-		}
+		if len(responseObject.Days) == 0 { 
+            middle = "No meals found, try again later"
+        } else {
+            for i := 0; i < len(responseObject.Days); i++ {
+			    middle = fmt.Sprintf("%s\n\n %s: \nAðalréttur: %s\nVeganréttur: %s\n", middle, responseObject.Days[i].Day, responseObject.Days[i].Main, responseObject.Days[i].Vegan)
+		    }
+        }
 		var codeBlockEnd = "```"
 		res := codeBlockStart + middle + codeBlockEnd
 		s.ChannelMessageSend(m.ChannelID, res)
