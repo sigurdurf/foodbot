@@ -134,6 +134,9 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		res := fmt.Sprintf("```%s: \nAðalréttur: %s\nVeganréttur: %s\n```", responseObject.Day, responseObject.Main, responseObject.Vegan)
 		s.ChannelMessageSend(m.ChannelID, res)
 	}
+  if m.Content == "!newbotwhodis" {
+    s.ChannelMessageSend(m.ChannelID, "this was written using the moonlander MK 1")
+  }
     if m.Content == "!badday"{
         s.ChannelMessageSend(m.ChannelID,"Everything’s gonna be okay. You did not come this far to give up. I believe in you.")
     }
